@@ -12,7 +12,7 @@ from django.db.models import F, Count
 from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 
 from cinema.models import Genre, Actor, CinemaHall, Movie, MovieSession, Order
@@ -118,12 +118,13 @@ class MovieViewSet(
         detail=True,
         methods=["post"],
         url_path="upload-image",
+        permission_classes=[IsAdminUser],
         parser_classes=[MultiPartParser, FormParser],
     )
     def upload_image(
         self, request: Request, pk: str | None = None
     ) -> Response:
-        """Validate and store an image using the existing staff permission."""
+        """Validate and store a movie image for staff users only."""
         serializer = self.get_serializer(
             self.get_object(), data=request.data
         )
